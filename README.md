@@ -5,7 +5,7 @@ Usage: gitrew [-hlci] timestamp
 Flags:
   -h, --help         Show this help message and exit
   -l, --list         Show memories (~/.gitrewind dir by default) end exit
-  -c, --cleanup      Delete memories (~/.gitrewind dir by default) and exit
+  -c, --cleanup      Delete memories (~/.gitrewind dir by default)
   -i, --interactive  Interactive mode (u need fzf for use it)
 Examples:
   gitrew 2 weeks ago
