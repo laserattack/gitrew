@@ -13,6 +13,4 @@ if (!$datetime) {
 
 system("git log -n1 --before=\"$datetime\" --format=\"%C(yellow)%h%Creset %C(green)%cd%Creset %C(blue)%s%Creset\" --date=short");
 
-system("git log -n1 --since=\"$datetime\" --format=\"%C(yellow)%h%Creset %C(green)%cd%Creset %C(blue)%s%Creset\" --date=short --reverse");
-
 print "\n";
