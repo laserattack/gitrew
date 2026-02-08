@@ -6,6 +6,7 @@ use feature 'say';
 use File::Basename;
 use File::Path qw(remove_tree make_path);
 use Getopt::Long;
+use POSIX qw(strftime);
 
 Getopt::Long::Configure('bundling');
 
@@ -22,7 +23,7 @@ sub usage {
         "Flags:\n".
         "  -h, --help         Show this help message and exit\n".
         "  -l, --list         Show memories (~/.gitrewind dir by default) end exit\n".
-        "  -c, --cleanup      Delete memories (~/.gitrewind dir by default) and exit\n".
+        "  -c, --cleanup      Delete memories (~/.gitrewind dir by default)\n".
         "  -i, --interactive  Interactive mode (u need fzf for use it)\n".
         "Examples:\n".
         "  gitrew 2 weeks ago\n".
@@ -48,7 +49,10 @@ sub main {
         $datetime = join(' ', @ARGV);
     }    
 
-    usage() unless $datetime;
+    unless ($datetime) {
+        usage() if !$CLEANUP;
+        exit 0;
+    }
     
     my $hash = `git log -n1 --before="$datetime" --format="%H" 2>/dev/null`;
     chomp $hash;
@@ -62,9 +66,11 @@ sub main {
     my $safe_datetime = $datetime;
     $safe_datetime =~ s/ /_/g;
 
+    my $current_time = strftime("%Y-%m-%d_%H:%M:%S", localtime());
+    
     make_path($GITREWIND_DIR) unless -d $GITREWIND_DIR;
 
-    my $snapshot_dir = "$GITREWIND_DIR/${repo_name}_${safe_datetime}";
+    my $snapshot_dir = "$GITREWIND_DIR/${repo_name}__${current_time}__${safe_datetime}";
 
     remove_tree($snapshot_dir) or die "Cannot remove: $!\n" if -d $snapshot_dir;
     make_path($snapshot_dir) or die "Cannot create: $!\n";
@@ -88,7 +94,6 @@ GetOptions(
 
 if ($CLEANUP) {
     remove_tree($GITREWIND_DIR) or die "Cannot remove: $!\n" if -d $GITREWIND_DIR;
-    exit 0;
 }
 
 if ($LIST) {
