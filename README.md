@@ -12,4 +12,6 @@ Examples:
   gitrew 2 minute ago
   gitrew 2026-02-08 15:52
   gitrew -i
+Warning: Git's date parser is very strange. 'gibberish' may return
+         the latest commit. Use proper timestamps e.g. like above.
 ```
