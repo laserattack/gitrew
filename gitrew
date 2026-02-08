@@ -12,16 +12,21 @@ Getopt::Long::Configure('bundling');
 our $GITREWIND_DIR = "$ENV{HOME}/.gitrewind";
 
 # flags
-our $HELP    = 0;
-our $CLEANUP = 0;
+our $HELP        = 0;
+our $CLEANUP     = 0;
+our $INTERACTIVE = 0;
 
 sub usage {
-    die "Flags:\n".
-        "  -h, --help     Show this help message and exit\n".
-        "  -c, --cleanup  Delete memories (~/.gitrewind dir by default) and exit\n".
-        "Usage: e.g.,\n".
+    die "Usage: [-hci] timestamp\n".
+        "Flags:\n".
+        "  -h, --help         Show this help message and exit\n".
+        "  -c, --cleanup      Delete memories (~/.gitrewind dir by default) and exit\n".
+        "  -i, --interactive  Interactive mode (u need fzf for use it)\n".
+        "Examples:\n".
         "  gitrew 2 weeks ago\n".
-        "  gitrew 2026-02-08 15:52\n";
+        "  gitrew 2 minute ago\n".
+        "  gitrew 2026-02-08 15:52\n".
+        "  gitrew -i\n";
 }
 
 sub main {
@@ -29,14 +34,24 @@ sub main {
         say "Not git repo\n";
         usage();
     }
+
+    my $datetime;
     
-    my $datetime = join(' ', @ARGV);
+    if ($INTERACTIVE) {
+        my $commits = `git log --date='format:%Y-%m-%d %H:%M:%S' --format="%ad"`;
+        my $choice = `echo "$commits" | fzf`;
+        chomp $choice;
+        $datetime = $choice if $choice;
+    } else {
+        $datetime = join(' ', @ARGV);
+    }    
+
     usage() unless $datetime;
     
     my $hash = `git log -n1 --before="$datetime" --format="%H" 2>/dev/null`;
     chomp $hash;
 
-    die "There was only darkness before: $datetime\n" if !$hash;
+    die "There was only darkness: $datetime\n" if !$hash;
 
     my $repo_root = `git rev-parse --show-toplevel`;
     chomp $repo_root;
@@ -65,6 +80,7 @@ sub main {
 GetOptions(
     'help|h'    => \$HELP,
     'cleanup|c' => \$CLEANUP,
+    'interactive|i' => \$INTERACTIVE,
 ) or usage();
 
 if ($CLEANUP) {
