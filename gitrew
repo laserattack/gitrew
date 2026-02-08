@@ -5,35 +5,66 @@ use warnings;
 use feature 'say';
 use File::Basename;
 use File::Path qw(remove_tree make_path);
+use Getopt::Long;
 
-my $datetime = join(' ', @ARGV);
+Getopt::Long::Configure('bundling');
 
-if (!$datetime) {
-    die "Usage: e.g.,\n" .
-        "  gitrew 2 weeks ago\n" .
-        "  gitrew 2023-06-15 14:30\n";
+our $GITREWIND_DIR = "$ENV{HOME}/.gitrewind";
+
+# flags
+our $HELP    = 0;
+our $CLEANUP = 0;
+
+sub usage {
+    die "Flags:\n".
+        "  -h, --help     Show this help message and exit\n".
+        "  -c, --cleanup  Delete all memories (~/.gitrewind dir by default) and exit\n".
+        "Usage: e.g.,\n".
+        "  gitrew 2 weeks ago\n".
+        "  gitrew 2026-02-08 15:52\n";
 }
 
-my $hash = `git log -n1 --before="$datetime" --format="%H" 2>/dev/null`;
-chomp $hash;
+sub main {
+    my $datetime = join(' ', @ARGV);
+    usage() unless $datetime;
+    
+    my $hash = `git log -n1 --before="$datetime" --format="%H" 2>/dev/null`;
+    chomp $hash;
 
-die "No commit found before: $datetime\n" if !$hash;
+    die "There was only darkness before: $datetime\n" if !$hash;
 
-my $repo_root = `git rev-parse --show-toplevel`;
-chomp $repo_root;
-my $repo_name = basename($repo_root);
+    my $repo_root = `git rev-parse --show-toplevel`;
+    chomp $repo_root;
+    my $repo_name = basename($repo_root);
 
-my $safe_datetime = $datetime;
-$safe_datetime =~ s/ /_/g;
+    my $safe_datetime = $datetime;
+    $safe_datetime =~ s/ /_/g;
 
-my $snapshot_dir = $repo_root."_".$safe_datetime;
+    make_path($GITREWIND_DIR) unless -d $GITREWIND_DIR;
 
-remove_tree($snapshot_dir) or die "Cannot remove: $!\n" if -d $snapshot_dir;
-make_path($snapshot_dir) or die "Cannot create: $!\n";
+    my $snapshot_dir = "$GITREWIND_DIR/${repo_name}_${safe_datetime}";
 
-my $output = `git archive $hash | tar -x -C '$snapshot_dir' 2>&1`;
+    remove_tree($snapshot_dir) or die "Cannot remove: $!\n" if -d $snapshot_dir;
+    make_path($snapshot_dir) or die "Cannot create: $!\n";
 
-if ($? != 0) {
-    remove_tree($snapshot_dir);
-    die "Failed:\n$output\n";
+    my $output = `git archive $hash | tar -x -C '$snapshot_dir' 2>&1`;
+
+    if ($? != 0) {
+        remove_tree($snapshot_dir);
+        die "Failed:\n$output\n";
+    }
+
+    say $snapshot_dir;
 }
+
+GetOptions(
+    'help|h'    => \$HELP,
+    'cleanup|c' => \$CLEANUP,
+) or usage();
+
+if ($CLEANUP) {
+    remove_tree($GITREWIND_DIR) or die "Cannot remove: $!\n" if -d $GITREWIND_DIR;
+    exit 0;
+}
+
+main();
