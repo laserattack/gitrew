@@ -19,3 +19,10 @@ Examples:
 Warning: Git's date parser is very strange. 'gibberish' may return
          the latest commit. Use proper timestamps e.g. like above.
 ```
+
+# Requirements
+
+- Perl 5.10+
+- Git
+- fzf (optional, for interactive mode)
+- some standard unix utils
