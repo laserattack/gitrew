@@ -25,6 +25,8 @@ sub usage {
 }
 
 sub main {
+    die "Not git repo\n" if system("git rev-parse --git-dir >/dev/null 2>&1");
+    
     my $datetime = join(' ', @ARGV);
     usage() unless $datetime;
     
