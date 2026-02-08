@@ -1,7 +1,7 @@
 # Usage
 
 ```
-Usage: [-hci] timestamp
+Usage: gitrew [-hci] timestamp
 Flags:
   -h, --help         Show this help message and exit
   -c, --cleanup      Delete memories (~/.gitrewind dir by default) and exit
