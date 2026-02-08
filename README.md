@@ -1,3 +1,7 @@
+# Wtf?
+
+**gitrew** (gitrewind) - creates a snapshot of a Git repository at a specific point in time. The snapshot contains all files as they existed at that moment, saved to `~/.gitrewind/` by default for safe browsing and comparison
+
 # Usage
 
 ```
