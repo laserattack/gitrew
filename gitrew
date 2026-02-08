@@ -2,15 +2,38 @@
 
 use strict;
 use warnings;
+use feature 'say';
+use File::Basename;
+use File::Path qw(remove_tree make_path);
 
 my $datetime = join(' ', @ARGV);
 
 if (!$datetime) {
-    die "Usage:\n" .
+    die "Usage: e.g.,\n" .
         "  gitrew 2 weeks ago\n" .
         "  gitrew 2023-06-15 14:30\n";
 }
 
-system("git log -n1 --before=\"$datetime\" --format=\"%C(yellow)%h%Creset %C(green)%cd%Creset %C(blue)%s%Creset\" --date=short");
+my $hash = `git log -n1 --before="$datetime" --format="%H" 2>/dev/null`;
+chomp $hash;
 
-print "\n";
+die "No commit found before: $datetime\n" if !$hash;
+
+my $repo_root = `git rev-parse --show-toplevel`;
+chomp $repo_root;
+my $repo_name = basename($repo_root);
+
+my $safe_datetime = $datetime;
+$safe_datetime =~ s/ /_/g;
+
+my $snapshot_dir = $repo_root."_".$safe_datetime;
+
+remove_tree($snapshot_dir) or die "Cannot remove: $!\n" if -d $snapshot_dir;
+make_path($snapshot_dir) or die "Cannot create: $!\n";
+
+my $output = `git archive $hash | tar -x -C '$snapshot_dir' 2>&1`;
+
+if ($? != 0) {
+    remove_tree($snapshot_dir);
+    die "Failed:\n$output\n";
+}
