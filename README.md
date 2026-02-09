@@ -20,6 +20,7 @@ Warning: Git's date parser is very strange. 'gibberish' may return
 
 # Requirements
 
+- linux system
 - Perl 5.10+
 - Git
 - some standard unix utils
