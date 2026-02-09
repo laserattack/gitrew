@@ -4,7 +4,7 @@
 
 The snapshot contains all files as they existed at that moment
 
-gitrew doesn't modify any Git state - working tree, HEAD, index, or history remain untouched. Snapshots are isolated copies
+**gitrew** doesn't modify any Git state - working tree, HEAD, index, or history remain untouched
 
 # Usage
 
