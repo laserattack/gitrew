@@ -18,6 +18,21 @@ Warning: Git's date parser is very strange. 'gibberish' may return
          the latest commit. Use proper timestamps e.g. like above
 ```
 
+You can also add this function
+
+```
+grcd() { local d; d=$(gitrew "$@" 2>/dev/null) && cd "$d" 2>/dev/null; }
+```
+
+to your ~/.bashrc to quickly switch to a past version of the repository
+
+```
+~/projects/gitrew
+[serr@lap]-> grcd 5 hour ago
+~/.gitrewind/gitrew_1770631861/gitrew
+[serr@lap]->
+```
+
 # Requirements
 
 - linux system
