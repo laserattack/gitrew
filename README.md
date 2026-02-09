@@ -7,8 +7,8 @@
 ```
 Usage: gitrew [-lcb] timestamp
 Flags:
-  -l, --list     Show all snapshots (~/.gitrewind dir) end exit
-  -c, --cleanup  Delete all snapshots (~/.gitrewind dir)
+  -l, --list     Show all snapshots (~/.gitrewind dir) and exit
+  -c, --cleanup  Delete all snapshots (~/.gitrewind dir) and exit
   -b, --branch   Specify a Git branch (otherwise, the current one is used)
 Examples:
   gitrew 2 weeks ago
