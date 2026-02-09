@@ -1,10 +1,10 @@
 # Wtf?
 
-**gitrew** (gitrewind) - simple Git wrapper that creates a snapshot of a Git repository at a specific point in time
+**gitrew** (gitrewind) - a simple Git wrapper that creates snapshots of repository states at specific points in time
 
-The snapshot contains all files as they existed at that moment
+Each snapshot contains all files as they existed at the time of the nearest commit before the specified timestamp
 
-**gitrew** doesn't modify any Git state - working tree, HEAD, index, or history remain untouched
+The tool is completely read-only - it doesn't modify your working tree, HEAD, staging area, or Git history in any way
 
 # Usage
 
