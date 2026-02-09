@@ -20,11 +20,11 @@ Warning: Git's date parser is very strange. 'gibberish' may return
 
 You can also add this function
 
-```
+``` bash
 grcd() { local d; d=$(gitrew "$@" 2>/dev/null) && cd "$d" 2>/dev/null; }
 ```
 
-to your ~/.bashrc to quickly switch to a past version of the repository
+to your `~/.bashrc` to quickly switch to a past version of the repository
 
 ```
 ~/projects/gitrew
